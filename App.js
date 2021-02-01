@@ -6,7 +6,7 @@
  * @flow strict-local
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -36,7 +36,22 @@ return data;
 
 const App: () => React$Node = () => {
 
-    const [newCases, setNewCases] = useState(0);
+    const [cases, setCases] = useState(0);
+    const [dates, setDates] = useState(0);
+
+    useEffect(() => {
+        console.log("Updating")
+        getData().then(({data}) => {
+           d = data.map(e => e["date"]).slice(0,180)
+           setDates(d.reverse())
+           caseNo = data.map(e => e["newCases"]).slice(0,180)
+           setCases(caseNo.reverse())
+        })
+        .then(() => {
+           //console.log(chartData.labels)
+           console.log(cases)
+        })
+     }, [])
 
     return (
         <>
@@ -47,7 +62,13 @@ const App: () => React$Node = () => {
                     <Text h3 style={{fontFamily: 'FiraSans-Regular', textDecorationLine: 'underline'}}>COVID-19 : England</Text>
                     
                 </View>
+
+                {/* The table (need to do a fetch somehwere in here to get the data) */}
                 <T newCases={20000} newDeaths={1000} changeCases="-30" changeDeaths="-50" changeCasesColor="#0E5A30" changeDeathsColor="#DB5461"/>
+            
+                {/* Growth in cases chart */}
+                
+            
             </ScrollView>
         </SafeAreaView>
         </>

@@ -23,8 +23,8 @@ export default class T extends Component {
       return (
         <View style={{marginTop: 30}}>
           <Table borderStyle={{borderWidth: 2, borderColor: '#fff'}}>
-            <Row data={["New cases", "New deaths"]} textStyle={{textAlign: 'center', fontFamily: 'FiraSans-Regular', fontSize: 9}}/>
-            <Row data={[this.props.newCases, this.props.newDeaths]} textStyle={{textAlign: 'center', fontFamily: 'FiraSans-Black', fontSize: 30}}/>
+            <Row data={["New cases", "New deaths"]} textStyle={{textAlign: 'center', fontFamily: 'FiraSans-Regular', fontSize: 11}}/>
+            <Row data={[this.props.newCases, this.props.newDeaths]} textStyle={{textAlign: 'center', fontFamily: 'FiraSans-Black', fontSize: 35}}/>
             {
                     <Row data={[
                         <Cell data={this.textData(this.props.changeCases, this.props.changeCasesColor)} />,
