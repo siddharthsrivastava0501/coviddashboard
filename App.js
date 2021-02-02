@@ -24,16 +24,16 @@ import {LineChart} from 'react-native-chart-kit'
 const endpoint = (
     'https://api.coronavirus.data.gov.uk/v1/data?' +
     'filters=areaType=nation;areaName=england&' +
-    'structure={"date":"date","newCases":"newCasesByPublishDate"}'
+    'structure={"date":"date","newCases":"newCasesByPublishDate", "newDeaths": "newDeaths28DaysByDeathDate"}'
  );
  
 const api = axios.create({
-baseURL: endpoint 
+    baseURL: endpoint 
 })
 
 async function getData() {
-let data = await api.get().then(({ data }) => data).catch(error => console.log(error))
-return data;
+    let data = await api.get().then(({ data }) => data).catch(error => console.log(error))
+    return data;
 }
 
 function inputToMonth(date) {
@@ -64,22 +64,27 @@ const App = () => {
     const [cases, setCases] = useState(0);
     const [tempDates, setTempDates] = useState(0);
     const [dates, setDates] = useState(0);
+    const [deaths, setDeaths] = useState(0);
     const [loading, setLoading] = useState(true);
 
 
     useEffect(() => {
         console.log("Updating")
         getData().then(({data}) => {
-            d = data.map(e => e["date"]).slice(0,90)
+            d = data.map(e => e["date"]).slice(0,100)
             setTempDates(d.reverse())
 
-            caseNo = data.map(e => e["newCases"]).slice(0,90)
+            caseNo = data.map(e => e["newCases"]).slice(0,100)
             setCases(caseNo.reverse())
+
+            deathNo = data.map(e => e["newDeaths"]).slice(0,100)
+            setDeaths(deathNo.reverse())
+
         })
         .then(() => {
             const newDates = tempDates.map((x) => inputToMonth(x))
-            console.log(newDates)
             setDates(newDates)
+            console.log(deaths)
             setLoading(false)
         })
     }, [])
@@ -102,47 +107,84 @@ const App = () => {
                     </View>
     
                     {/* The table (need to do a fetch somehwere in here to get the data) */}
-                    <T newCases={20000} newDeaths={1000} changeCases="-30" changeDeaths="-50" changeCasesColor="#0E5A30" changeDeathsColor="#DB5461"/>
+                    <T newCases={cases[cases.length - 1]} newDeaths={1000} changeCases="-30" changeDeaths="-50" changeCasesColor="#0E5A30" changeDeathsColor="#DB5461"/>
                 
                     {/* Growth in cases chart */}
                     <View style={{flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: 30}} >
-                    <Text style={{fontFamily: 'FiraSans-Regular', fontSize: 13}}>Daily cases</Text>
-                    <LineChart
-                        data={{
-                        labels: dates,
-                        datasets: [
-                            {
-                            data: cases,
-                            color: (opacity = 1) => `rgba(2, 8, 135, ${1})`, // optional
-                            strokeWidth: 2 // optional    
-                            }
-                        ]
-                        }}
-                        width={Dimensions.get("window").width} // from react-native
-                        height= {300}
-                        yAxisInterval={1} // optional, defaults to 1
-                        chartConfig={{
-                            backgroundGradientFrom: "#fff",
-                            backgroundGradientFromOpacity: 0,
-                            backgroundGradientTo: "#fff",
-                            backgroundGradientToOpacity: 0,
-                            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                            strokeWidth: 2, // optional, default 3
-                            barPercentage: 0.5,
-                            decimalPlaces: 0,
-                            useShadowColorFromDataset: false // optional
-                          }}
-                        bezier
-                        height={220}
-                        withShadow = {false}
-                        withDots = {false}
-                        withInnerLines = {false}
-                        fromZero = {true}
-                        style={{
-                        marginVertical: 8,
-                        marginHorizontal: 10,
-                        }}
-                    />
+                        <Text style={{fontFamily: 'FiraSans-Regular', fontSize: 13}}>Daily cases</Text>
+                        <LineChart
+                            data={{
+                            labels: dates,
+                            datasets: [
+                                {
+                                data: cases,
+                                color: (opacity = 1) => `rgba(2, 8, 135, ${1})`, // optional
+                                strokeWidth: 2 // optional    
+                                }
+                            ]
+                            }}
+                            width={Dimensions.get("window").width} // from react-native
+                            height= {300}
+                            yAxisInterval={1} // optional, defaults to 1
+                            chartConfig={{
+                                backgroundGradientFrom: "#fff",
+                                backgroundGradientFromOpacity: 0,
+                                backgroundGradientTo: "#fff",
+                                backgroundGradientToOpacity: 0,
+                                color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                                strokeWidth: 2, // optional, default 3
+                                barPercentage: 0.5,
+                                decimalPlaces: 0,
+                                useShadowColorFromDataset: false // optional
+                            }}
+                            bezier
+                            height={220}
+                            withShadow = {false}
+                            withDots = {false}
+                            withInnerLines = {false}
+                            fromZero = {true}
+                            style={{
+                            marginVertical: 8,
+                            marginHorizontal: 10,
+                            }}
+                        />
+
+                        <LineChart
+                            data={{
+                            labels: dates,
+                            datasets: [
+                                {
+                                data: deaths,
+                                color: (opacity = 1) => `rgba(2, 8, 135, ${1})`, // optional
+                                strokeWidth: 2 // optional    
+                                }
+                            ]
+                            }}
+                            width={Dimensions.get("window").width} // from react-native
+                            height= {300}
+                            yAxisInterval={1} // optional, defaults to 1
+                            chartConfig={{
+                                backgroundGradientFrom: "#fff",
+                                backgroundGradientFromOpacity: 0,
+                                backgroundGradientTo: "#fff",
+                                backgroundGradientToOpacity: 0,
+                                color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                                strokeWidth: 2, // optional, default 3
+                                barPercentage: 0.5,
+                                decimalPlaces: 0,
+                                useShadowColorFromDataset: false // optional
+                            }}
+                            bezier
+                            height={220}
+                            withShadow = {false}
+                            withDots = {false}
+                            withInnerLines = {false}
+                            fromZero = {true}
+                            style={{
+                            marginVertical: 8,
+                            marginHorizontal: 10,
+                            }}
+                        />
                     </View>
                 
                 </ScrollView>
