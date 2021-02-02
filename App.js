@@ -36,10 +36,33 @@ let data = await api.get().then(({ data }) => data).catch(error => console.log(e
 return data;
 }
 
+function inputToMonth(date) {
+    const breakdown = date.split('-')
+    const months = {
+        "01": 'Jan',
+        "02": 'Feb',
+        "03": 'Mar',
+        "04": 'Apr',
+        "05": 'May',
+        "06": 'Jun',
+        "07": 'July',
+        "08": 'Aug',
+        "09": 'Sept',
+        "10": 'Oct',
+        "11": 'Nov',
+        "12": 'Dec',
+    }
+    if (breakdown[2] == "01") {
+        return months[breakdown[1]]
+    } else {
+        return "";
+    }
+}
 
 const App = () => {
 
     const [cases, setCases] = useState(0);
+    const [tempDates, setTempDates] = useState(0);
     const [dates, setDates] = useState(0);
     const [loading, setLoading] = useState(true);
 
@@ -47,15 +70,17 @@ const App = () => {
     useEffect(() => {
         console.log("Updating")
         getData().then(({data}) => {
-           d = data.map(e => e["date"]).slice(0,120)
-           setDates(d.reverse())
-           caseNo = data.map(e => e["newCases"]).slice(0,120)
-           setCases(caseNo.reverse())
+            d = data.map(e => e["date"]).slice(0,90)
+            setTempDates(d.reverse())
+
+            caseNo = data.map(e => e["newCases"]).slice(0,90)
+            setCases(caseNo.reverse())
         })
         .then(() => {
-           //console.log(chartData.labels)
-           console.log(dates)
-           setLoading(false)
+            const newDates = tempDates.map((x) => inputToMonth(x))
+            console.log(newDates)
+            setDates(newDates)
+            setLoading(false)
         })
     }, [])
 
@@ -80,11 +105,11 @@ const App = () => {
                     <T newCases={20000} newDeaths={1000} changeCases="-30" changeDeaths="-50" changeCasesColor="#0E5A30" changeDeathsColor="#DB5461"/>
                 
                     {/* Growth in cases chart */}
-                    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}} >
-                    <Text>Bezier Line Chart</Text>
+                    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: 30}} >
+                    <Text style={{fontFamily: 'FiraSans-Regular', fontSize: 13}}>Daily cases</Text>
                     <LineChart
                         data={{
-                        labels: ["January", "February", "March", "April", "May", "June"],
+                        labels: dates,
                         datasets: [
                             {
                             data: cases,
@@ -115,6 +140,7 @@ const App = () => {
                         fromZero = {true}
                         style={{
                         marginVertical: 8,
+                        marginHorizontal: 10,
                         }}
                     />
                     </View>
