@@ -24,7 +24,7 @@ import {LineChart} from 'react-native-chart-kit'
 const endpoint = (
     'https://api.coronavirus.data.gov.uk/v1/data?' +
     'filters=areaType=nation;areaName=england&' +
-    'structure={"date":"date","newCases":"newCasesByPublishDate", "newDeaths": "newDeaths28DaysByDeathDate"}'
+    'structure={"date":"date","newCases":"newCasesByPublishDate", "newDeaths": "newDeaths28DaysByPublishDate"}'
  );
  
 const api = axios.create({
@@ -36,6 +36,7 @@ async function getData() {
     return data;
 }
 
+// Convert a date to nothing or to the name of the month if it is on the start of the month
 function inputToMonth(date) {
     const breakdown = date.split('-')
     const months = {
@@ -57,6 +58,29 @@ function inputToMonth(date) {
     } else {
         return "";
     }
+}
+
+// Takes a value and an array and calculates the % difference between value and the last 7 values of the array
+function getPercent (v, a) {
+    const lastSeven = a.slice(a.length - 9, a.length-2)
+    const average = lastSeven.reduce((x,y) => x + y)/7
+    const percentChange = ((v - average)/v)*100
+    var color = ""
+    if (Math.abs(percentChange) == percentChange) {
+        color = "#DB5461"
+    } else {
+        color = "#0E5A30"
+    }
+
+    return [percentChange, color]
+}
+
+function Footer() {
+    return (
+        <View style={{flex: 1, alignItems: 'center', marginTop: 'auto', marginBottom: 0}}>
+            <Text style={{fontFamily: 'FiraSans-Regular', fontSize: 10}}>STAY HOME - PROTECT THE NHS - SAVE LIVES</Text>
+        </View>
+    )
 }
 
 const App = () => {
@@ -84,7 +108,6 @@ const App = () => {
         .then(() => {
             const newDates = tempDates.map((x) => inputToMonth(x))
             setDates(newDates)
-            console.log(deaths)
             setLoading(false)
         })
     }, [])
@@ -107,7 +130,7 @@ const App = () => {
                     </View>
     
                     {/* The table (need to do a fetch somehwere in here to get the data) */}
-                    <T newCases={cases[cases.length - 1]} newDeaths={1000} changeCases="-30" changeDeaths="-50" changeCasesColor="#0E5A30" changeDeathsColor="#DB5461"/>
+                    <T newCases={cases[cases.length - 1]} newDeaths={deaths[deaths.length - 1]} changeCases={getPercent(cases[cases.length - 1], cases)[0].toFixed(2)} changeDeaths={getPercent(deaths[deaths.length - 1], deaths)[0].toFixed(2)} changeCasesColor={getPercent(cases[cases.length - 1], cases)[1]} changeDeathsColor={getPercent(deaths[deaths.length - 1], deaths)[1]} />
                 
                     {/* Growth in cases chart */}
                     <View style={{flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: 30}} >
@@ -149,6 +172,7 @@ const App = () => {
                             }}
                         />
 
+                        <Text style={{fontFamily: 'FiraSans-Regular', fontSize: 13, marginTop: 25}}>Daily deaths</Text>
                         <LineChart
                             data={{
                             labels: dates,
