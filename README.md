@@ -2,7 +2,7 @@
 
 This is a cross-platform app built using React Native to display the UK's COVID-19 statistics, including cases and deaths from the UK Government coronavirus [API](https://coronavirus.data.gov.uk/). 
 
-![Image](assets/landing-image.png)
+![Screenshot](./assets/fonts/landing-image.png)
 
 Currently does not show vaccinations as the API does not have an endpoint for that. 
 
