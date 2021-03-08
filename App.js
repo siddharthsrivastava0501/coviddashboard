@@ -25,7 +25,7 @@ const endpoint = (
     'https://api.coronavirus.data.gov.uk/v1/data?' +
     'filters=areaType=nation;areaName=england&' +
     'structure={"date":"date","newCases":"newCasesByPublishDate", "newDeaths": "newDeaths28DaysByPublishDate"}'
- );
+);
  
 const api = axios.create({
     baseURL: endpoint 
@@ -96,7 +96,7 @@ const App = () => {
         console.log("Updating")
         getData().then(({data}) => {
             d = data.map(e => e["date"]).slice(0,100)
-            setTempDates(d.reverse())
+            setDates(d.reverse())
 
             caseNo = data.map(e => e["newCases"]).slice(0,100)
             setCases(caseNo.reverse())
@@ -106,9 +106,12 @@ const App = () => {
 
         })
         .then(() => {
-            const newDates = tempDates.map((x) => inputToMonth(x))
+            const newDates = dates.map((x) => inputToMonth(x))
             setDates(newDates)
             setLoading(false)
+        })
+        .catch(() => {
+            console.log("ERROR");
         })
     }, [])
 
@@ -210,6 +213,7 @@ const App = () => {
                             }}
                         />
                     </View>
+                    <Footer />
                 
                 </ScrollView>
             </SafeAreaView>
